@@ -3,9 +3,11 @@ import axios from "axios";
 interface Country {
   code: string;
   name: string;
-  flagUrl: string;
-  borders: { code: string; name: string }[];
-  populationData: { year: number; value: number }[];
+}
+
+interface CountryData {
+  code: string;
+  name: string;
 }
 
 export const fetchCountries = async (): Promise<Country[]> => {
@@ -15,7 +17,10 @@ export const fetchCountries = async (): Promise<Country[]> => {
   return response.data;
 };
 
-export const fetchCountryDetails = async (code: string, name: string): Promise<Country> => {
+export const fetchCountryDetails = async (
+  code: string,
+  name: string
+): Promise<CountryData> => {
   const response = await axios.get(
     `${process.env.NEXT_PUBLIC_API_URL}/country/${code}/${name}`
   );

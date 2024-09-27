@@ -9,8 +9,12 @@ export const getCountries = catchAsync(async (req: Request, res: Response) => {
 
 export const getCountryInfo = catchAsync(
   async (req: Request, res: Response) => {
-    const { code, countryName } = req.params;
-    const countryInfo = await countryService.fetchCountryInfo(code, countryName);
+    const code = req.params.code;
+    const countryName = decodeURIComponent(req.params.countryName);
+    const countryInfo = await countryService.fetchCountryInfo(
+      code,
+      countryName
+    );
     res.json(countryInfo);
   }
 );

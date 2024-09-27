@@ -36,7 +36,10 @@ const fetchCountryBorders = async (code: string) => {
   }
 };
 
-const fetchCountryPopulation = async (countryName: string) => {
+const fetchCountryPopulation = async (
+  countryName: string,
+  availableCountries: string[]
+) => {
   try {
     const response = await apiClient.get(COUNTRY_POPULATION_URL);
     // console.log("This is the response of the population", response);
@@ -46,12 +49,15 @@ const fetchCountryPopulation = async (countryName: string) => {
       throw new Error("No population data available.");
     }
 
-    const countryData = countries.find(
+    const filteredCountries = countries.filter((country: any) =>
+      availableCountries.includes(country.country.toLowerCase().trim())
+    );
+
+    const countryData = filteredCountries.find(
       (country: any) =>
         country.country.toLowerCase().trim() ===
         countryName.toLowerCase().trim()
     );
-    //Here needed a filter to extract the iso3 property with the availableCountries
 
     if (!countryData) {
       throw new Error(`No population data found for country: ${countryName}`);
@@ -79,9 +85,14 @@ const fetchCountryFlag = async (countryName: string) => {
 
 export const fetchCountryInfo = async (code: string, countryName: string) => {
   try {
+    const availableCountriesResponse = await fetchAvailableCountries();
+    const availableCountries = availableCountriesResponse.map((country: any) =>
+      country.name.toLowerCase().trim()
+    );
+
     const [countryData, population, flag] = await Promise.all([
       fetchCountryBorders(code),
-      fetchCountryPopulation(countryName),
+      fetchCountryPopulation(countryName, availableCountries),
       fetchCountryFlag(countryName),
     ]);
 
